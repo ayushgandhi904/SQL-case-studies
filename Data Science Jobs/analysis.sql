@@ -124,19 +124,39 @@ inner join
 	on d.experience_level = e.experience_level
 	)f
 )y
-on x.experience_level = y.experience_level
+on x.experience_level = y.experience_level;
 
-/* 8. AS a compensatiON specialist at a Fortune 500 company, you're tASked WITH analyzINg salary trends over time. Your objective is to calculate the average 
-salary INcreASe percentage for each experience level and job title between the years 2023 and 2024, helpINg the company stay competitive IN the talent market.*/
+/* 8. AS a compensatiON specialist at a Fortune 500 company, you're tASked WITH analyzINg salary trends over time. 
+Your objective is to calculate the average salary INcreASe percentage for each experience level and job title 
+between the years 2023 and 2024, helpINg the company stay competitive IN the talent market.*/
+
+select * from salaries;
+
+select x.experience_level, x.job_title, avg_salary_2023, avg_salary_2024, ((avg_salary_2024 - avg_salary_2023)/avg_salary_2023)*100 as '%change' from 
+	(
+	select experience_level, job_title, avg(salary_in_usd) as 'avg_salary_2023' from salaries where work_year = 2023 group by experience_level, job_title
+	)x
+inner join
+	(
+	select experience_level, job_title, avg(salary_in_usd) as 'avg_salary_2024' from salaries where work_year = 2024 group by experience_level, job_title
+	)y
+on x.experience_level = y.experience_level and x.job_title = y.job_title
 
 
 
+/* 9. You're a database administrator tasked with role-based access control for a company's employee database. 
+Your goal is to implement a security measure where employees in different experience level (e.g.Entry Level, Senior level 
+etc.) can only access details relevant to their respective experience_level, ensuring data confidentiality and minimizing 
+the risk of unauthorized access. */
  
- 
- 
- 
- 
- 
- 
- 
- 
+use practise; 
+create user 'entry_level'@'%' identified by 'EN';
+
+create view entry_level as
+(
+select * from salaries where experience_level='EN'
+);
+
+grant select on practise.entry_level to 'entry_level'@'%';
+
+show privileges 
