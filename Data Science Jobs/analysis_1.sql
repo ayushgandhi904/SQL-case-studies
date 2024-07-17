@@ -6,7 +6,8 @@ select * from salaries;
 /* 1. As a market researcher, your job is to Investigate the job market for a company that analyzes workforce data.
 Your Task is to know how many people were employed IN different types of companies AS per their size IN 2021.*/
 
-select distinct company_location 
+select distinct company_locati
+on 
 from salaries 
 where (remote_ratio = 100) and (job_title like '%manager%') and (salary_in_usd >90000);
 
