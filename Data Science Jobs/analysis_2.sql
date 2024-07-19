@@ -52,7 +52,3 @@ Your task is to list the top three  Countries with the highest salary growth rat
 Emerging talent markets.*/
 
 
-
-
-
-
