@@ -63,8 +63,6 @@ on b.season_number = c.season_number;
 you are determining the season with the highest average monthly sales and identify the top 5 industries with the highest average 
 monthly sales during that season to optimize investment decisions?*/
 
--- select * from sharktank
-
 set @season = (select season_number from 
 (
 select season_number, round(avg(`monthly_sales(in_lakhs)`),2) as 'avg_sales' from sharktank 
@@ -74,11 +72,41 @@ group by season_number order by avg_sales desc limit 1
 select industry, round(avg(`monthly_sales(in_lakhs)`),2) as 'avg_sales_of_industry' from sharktank where season_number = @season
 group by industry order by avg_sales_of_industry desc limit 5;
 
-
 /*5. As a data scientist at our firm, your role involves solving real-world challenges like identifying industries with consistent 
 increases in funds raised over multiple seasons. This requires focusing on industries where data is available across all three seasons. 
 Once these industries are pinpointed, your task is to delve into the specifics, analyzing the number of pitches made, 
 offers received, and offers converted per season within each industry.*/
+
+select * from sharktank;
+select industry, season_number, sum(`Total_Deal_Amount(in_lakhs)`) as 'total_deal' from sharktank
+group by industry, season_number;
+
+-- pivot 
+with required as 
+(
+select industry,
+max(case when season_number = 1 then `Total_Deal_Amount(in_lakhs)` end) as season_1,
+max(case when season_number = 2 then `Total_Deal_Amount(in_lakhs)` end) as season_2,
+max(case when season_number = 3 then `Total_Deal_Amount(in_lakhs)` end) as season_3
+from sharktank
+group by industry
+having season_3 > season_2 and season_2 > season_1 and season_1 != 0
+)
+
+select b.season_number, a.industry, count(b.startup_name) as 'total', 
+count(case when b.received_offer = 'yes' then b.startup_name end) as 'received',
+count(case when b.accepted_offer = 'yes' then b.startup_name end) as 'accepted' 
+from required as a inner join sharktank as b
+on a.industry = b.industry
+group by b.season_number, a.industry
+
+/*6. Every shark wants to know in how much year their investment will be returned, so you must create a system for them, where shark 
+will enter the name of the startup’s and the based on the total deal and equity given in how many years their principal amount will 
+be returned and make their investment decisions.*/
+
+
+
+
 
 
 
